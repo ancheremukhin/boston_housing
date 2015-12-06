@@ -17,7 +17,7 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import make_scorer
 from sklearn import grid_search
 
-METRIC = mean_absolute_error
+METRIC = explained_variance_score
 
 
 def load_data():
@@ -62,9 +62,7 @@ def split_data(city_data):
 
     # Get the features and labels from the Boston housing data
     X, y = city_data.data, city_data.target
-
-    X_train, X_test = train_test_split(X, test_size=0.3)
-    y_train, y_test = train_test_split(y, test_size=0.3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
     return X_train, y_train, X_test, y_test
 
@@ -170,7 +168,6 @@ def fit_predict_model(city_data):
     # Fit the learner to the training data
     print "Final Model: "
     print reg.fit(X, y)
-    print reg.best_params_
 
     # Use the model to predict the output of a particular sample
     x = [11.95, 0.00, 18.100, 0, 0.6590, 5.6090, 90.00, 1.385, 24, 680.0, 20.20, 332.09, 12.13]
