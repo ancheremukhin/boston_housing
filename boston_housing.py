@@ -8,16 +8,14 @@ from sklearn import datasets
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.cross_validation import train_test_split
 
-from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import median_absolute_error
-from sklearn.metrics import r2_score
 
 from sklearn.metrics import make_scorer
 from sklearn import grid_search
 
-METRIC = explained_variance_score
+METRIC = mean_absolute_error
 
 
 def load_data():
@@ -159,7 +157,7 @@ def fit_predict_model(city_data):
     # 1. Find the best performance metric
     # should be the same as your performance_metric procedure
     # http://scikit-learn.org/stable/modules/generated/sklearn.metrics.make_scorer.html
-    scorer = make_scorer(METRIC)
+    scorer = make_scorer(METRIC, greater_is_better=False)
 
     # 2. Use gridearch to fine tune the Decision Tree Regressor and find the best model
     # http://scikit-learn.org/stable/modules/generated/sklearn.grid_search.GridSearchCV.html#sklearn.grid_search.GridSearchCV
@@ -168,6 +166,7 @@ def fit_predict_model(city_data):
     # Fit the learner to the training data
     print "Final Model: "
     print reg.fit(X, y)
+    print "Best model parameter:  " + str(reg.best_params_)
 
     # Use the model to predict the output of a particular sample
     x = [11.95, 0.00, 18.100, 0, 0.6590, 5.6090, 90.00, 1.385, 24, 680.0, 20.20, 332.09, 12.13]
