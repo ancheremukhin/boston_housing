@@ -7,6 +7,7 @@ import pylab as pl
 from sklearn import datasets
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.cross_validation import train_test_split
+from sklearn.utils import shuffle
 
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
@@ -147,7 +148,8 @@ def fit_predict_model(city_data):
     """Find and tune the optimal model. Make a prediction on housing data."""
 
     # Get the features and labels from the Boston housing data
-    X, y = city_data.data, city_data.target
+    # and shuffle them randomly
+    X, y = shuffle(city_data.data, city_data.target)
 
     # Setup a Decision Tree Regressor
     regressor = DecisionTreeRegressor()
@@ -161,7 +163,7 @@ def fit_predict_model(city_data):
 
     # 2. Use gridearch to fine tune the Decision Tree Regressor and find the best model
     # http://scikit-learn.org/stable/modules/generated/sklearn.grid_search.GridSearchCV.html#sklearn.grid_search.GridSearchCV
-    reg = grid_search.GridSearchCV(regressor, parameters, scoring=scorer)
+    reg = grid_search.GridSearchCV(regressor, parameters, scoring=scorer, cv=10)
 
     # Fit the learner to the training data
     print "Final Model: "
@@ -174,32 +176,42 @@ def fit_predict_model(city_data):
     print "House: " + str(x)
     print "Prediction: " + str(y)
 
+    return (reg.best_params_['max_depth'], y)
+
 
 def main():
     """Analyze the Boston housing data. Evaluate and validate the
     performanance of a Decision Tree regressor on the housing data.
     Fine tune the model to make prediction on unseen data."""
 
-    # Load data
-    city_data = load_data()
+    predictions = list()
+    best_params = list()
+    for _ in range(5):
+        # Load data
+        city_data = load_data()
 
-    # Explore the data
-    explore_city_data(city_data)
+        # Explore the data
+        explore_city_data(city_data)
 
-    # Training/Test dataset split
-    X_train, y_train, X_test, y_test = split_data(city_data)
+        # Training/Test dataset split
+        X_train, y_train, X_test, y_test = split_data(city_data)
 
-    # Learning Curve Graphs
-    max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    for max_depth in max_depths:
-        learning_curve(max_depth, X_train, y_train, X_test, y_test)
+        # Learning Curve Graphs
+        max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        for max_depth in max_depths:
+            learning_curve(max_depth, X_train, y_train, X_test, y_test)
 
-    # Model Complexity Graph
-    model_complexity(X_train, y_train, X_test, y_test)
+        # Model Complexity Graph
+        model_complexity(X_train, y_train, X_test, y_test)
 
-    # Tune and predict Model
-    fit_predict_model(city_data)
+        # Tune and predict Model
+        depth, price = fit_predict_model(city_data)
 
+        predictions.append(price)
+        best_params.append(depth)
+
+    print "Average house prediction: " + str(np.mean(predictions))
+    print "Average best model parameter:  " + str(int(np.mean(best_params)))
 
 if __name__ == "__main__":
     main()
