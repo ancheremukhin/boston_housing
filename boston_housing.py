@@ -169,6 +169,7 @@ def fit_predict_model(city_data):
     print "Final Model: "
     print reg.fit(X, y)
     print "Best model parameter:  " + str(reg.best_params_)
+    print "Best model estimator:  " + str(reg.best_estimator_)
 
     # Use the model to predict the output of a particular sample
     x = [11.95, 0.00, 18.100, 0, 0.6590, 5.6090, 90.00, 1.385, 24, 680.0, 20.20, 332.09, 12.13]
